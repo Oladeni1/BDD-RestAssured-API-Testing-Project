@@ -18,16 +18,17 @@ import java.util.Map;
 
 public class GetUSAPostCodeInfoSteps {
 
+    private final String INCOMPLETE_USA_URL = "https://api.zippopotam.us/tx";
     private final String BASE_URL = "https://api.zippopotam.us";
     private Response response;
     private Scenario scenario;
 
 
     @Before
-    public void before(Scenario scenario) {
-        this.scenario = scenario;
+    public void before(Scenario scenario) { this.scenario = scenario;
 
     }
+    // - Positive Scenario
     @Given("I made a get call to {string}")
     public void i_made_a_get_call_to(String url2) throws URISyntaxException {
         RestAssured.baseURI = BASE_URL;
@@ -53,5 +54,20 @@ public class GetUSAPostCodeInfoSteps {
         {
             System.out.println(postCode.get(i++).get("post code"));
         }
+    }
+// - Negative Scenario
+    @Given("Get call to {string}")
+    public void getCallTo(String url2)  throws URISyntaxException{
+        RestAssured.baseURI = INCOMPLETE_USA_URL;
+        RequestSpecification requestSpecification = RestAssured.given();
+        response = requestSpecification.when().get(new URI(url2));
+        System.out.println("Incomplet USA Endpoint is - " + url2);
+    }
+
+    @Then("Status code of {string}")
+    public void statusCodeOf(String statusCode) {
+        int actualResponseCode = response.then().extract().statusCode();
+        Assert.assertEquals(statusCode, actualResponseCode + "");
+        System.out.println("Status code is - " + actualResponseCode);
     }
 }

@@ -17,7 +17,7 @@ import java.util.*;
 
 
 public class GetGBPostCodeInfoSteps {
-
+    private final String INCOMPLETE_GB_URL = "https://api.zippopotam.us/GB/eng/";
     private final String BASE_URL = "https://api.zippopotam.us";
     private Response response;
     private Scenario scenario;
@@ -28,7 +28,7 @@ public class GetGBPostCodeInfoSteps {
         this.scenario = scenario;
     }
 
-
+    //-Positive Test Scenario
     @Given("a get call to {string}")
     public void a_get_call_to(String url) throws URISyntaxException {
         RestAssured.baseURI = BASE_URL;
@@ -56,5 +56,19 @@ public class GetGBPostCodeInfoSteps {
             System.out.println(postCode.get(i++).get("post code"));
         }
     }
+//-Negative Test Scenario
+    @Given("a Get call to {string}")
+    public void aGetCallTo(String url)throws URISyntaxException {
+        RestAssured.baseURI = INCOMPLETE_GB_URL;
+        RequestSpecification requestSpecification = RestAssured.given();
+        response = requestSpecification.when().get(new URI(url));
+        System.out.println("Incomplete Url Endpoint is - " + url);
+    }
 
+    @Then("Status code is {string}")
+    public void statusCodeIs(String statusCode) {
+        int actualResponseCode = response.then().extract().statusCode();
+        Assert.assertEquals(statusCode, actualResponseCode + "");
+        System.out.println("Status code is - " + actualResponseCode);
+    }
 }
